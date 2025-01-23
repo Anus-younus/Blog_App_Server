@@ -2,6 +2,11 @@ import express from "express"
 import sendResponce from "../helpers/sendResponce.js"
 import Joi from "joi"
 import Blog from "../models/Blog.js"
+import authenticateUser from "../middlewares/authenticateUser.js"
+import multer from "multer"
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 
 const router = express.Router()
 
@@ -11,7 +16,7 @@ const blogSchema = Joi.object({
     tag: Joi.string().required(),
 })
 
-router.post("/addBlog", (req, res) => {
+router.post("/addBlog", authenticateUser, (req, res) => {
     try {
         const { value, error } = blogSchema.validate(req.body)
         console.log(req.user.id)
@@ -36,7 +41,7 @@ router.post("/addBlog", (req, res) => {
 })
 
 
-router.post("/fetchBlogs", async (req, res) => {
+router.post("/fetchBlogs", authenticateUser, async (req, res) => {
     try {
         const blogs = await Blog.findOne({ user: req.user.id })
 
@@ -47,7 +52,7 @@ router.post("/fetchBlogs", async (req, res) => {
     }
 })
 
-router.get("/fetchAllBlogs", async () => {
+router.get("/fetchAllBlogs", async (req, res) => {
     try {
         const blogs = await Blog.find()
 
