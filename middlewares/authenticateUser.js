@@ -17,7 +17,7 @@ const authenticateUser = async (req, res, next) => {
         next()
     }
     catch (error) {
-        sendResponce(res, 402, true, null, "Internal server error", error)
+        return sendResponce(res, 402, true, null, `Internal server error ${error}`, error)
     }
 }
 

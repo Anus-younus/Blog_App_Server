@@ -43,7 +43,18 @@ router.post("/fetchBlogs", async (req, res) => {
         return sendResponce(res, 202, false, blogs, "blog fetched successfully")
     } catch (error) {
         console.log("===========Internal Server Error==========", error)
-        return sendResponce(res, 404, error, null, "Internal Server Error")
+        return sendResponce(res, 402, true, null, `Internal server error ${error}`, error)
+    }
+})
+
+router.get("/fetchAllBlogs", async () => {
+    try {
+        const blogs = await Blog.find()
+
+        return sendResponce(res, 202, false, blogs, "blogs fetched successfully")
+    } catch (error) {
+        console.log("===========Internal Server Error==========", error)
+        return sendResponce(res, 402, true, null, `Internal server error ${error}`, error)
     }
 })
 
