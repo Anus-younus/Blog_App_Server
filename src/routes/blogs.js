@@ -3,10 +3,7 @@ import sendResponce from "../helpers/sendResponce.js"
 import Joi from "joi"
 import Blog from "../models/Blog.js"
 import authenticateUser from "../middlewares/authenticateUser.js"
-import multer from "multer"
-
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+import { upload } from "../middlewares/multer_middlware.js"
 
 const router = express.Router()
 
@@ -14,26 +11,21 @@ const blogSchema = Joi.object({
     title: Joi.string().required(),
     description: Joi.string().required(),
     tag: Joi.string().required(),
-})
+    image: Joi.optional()  // Allow image field
+});
 
-router.post("/addBlog", authenticateUser, (req, res) => {
+router.post("/addBlog", authenticateUser, upload.single('blog_image'), (req, res) => {
     try {
-        const { value, error } = blogSchema.validate(req.body)
-        console.log(req.user.id)
-        if (error) return sendResponce(res, 402, true, null, error.message)
 
-        const { title, description, tag } = value
-        const user = {
+        const { title, description, tag } = req.body
+        console.log({
             title,
             description,
             tag,
-            user: req.user.id
-        }
-        console.log({ ...user })
-        let newBlog = new Blog({ ...user })
-        newBlog = newBlog.save()
+            image: req.image
+        })
 
-        return sendResponce(res, 202, false, newBlog, "blog created successfully")
+        return sendResponce(res, 202, false, {}, "blog created successfully")
     } catch (error) {
         console.log("===========Internal Server Error==========", error)
         return sendResponce(res, 404, error, null, "Internal Server Error")
