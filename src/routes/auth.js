@@ -70,4 +70,24 @@ router.post("/login", async (req, res) => {
     }
 })
 
+router.post("/forgetPasword", async (req, res) => {
+    try {
+        const userExisted = await User.findOne({ email })
+        cpnsole.log(userExisted)
+    } catch (error) {
+        console.log("===========Internal Server Error==========", error)
+        return sendResponce(res, 404, error, null, "Internal Server Error")
+    }
+})
+
+router.post("/resetPassword", async (req, res) => {
+    try {
+        const userExisted = await User.findOne({ email: req.email })
+        console.log(req.email)
+    } catch (error) {
+        console.log("===========Internal Server Error==========", error)
+        return sendResponce(res, 404, error, null, "Internal Server Error")
+    }
+})
+
 export { router as authRoutes }

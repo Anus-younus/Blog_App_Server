@@ -25,6 +25,12 @@ router.post("/addBlog", authenticateUser, upload.single('blog_image'), (req, res
             image: req.image
         })
 
+        const newBlog = new Blog({
+            title,
+            description,
+            tag,
+        })
+
         return sendResponce(res, 202, false, {}, "blog created successfully")
     } catch (error) {
         console.log("===========Internal Server Error==========", error)
@@ -35,13 +41,31 @@ router.post("/addBlog", authenticateUser, upload.single('blog_image'), (req, res
 
 router.post("/fetchBlogs", authenticateUser, async (req, res) => {
     try {
-        const blogs = await Blog.findOne({ user: req.user.id })
+        try {
+
+            const { title, description, tag } = req.body
+            console.log({
+                title,
+                description,
+                tag,
+                image: req.image
+            })
+
+            return sendResponce(res, 202, false, {}, "blog created successfully")
+        } catch (error) {
+            console.log("===========Internal Server Error==========", error)
+            return sendResponce(res, 404, error, null, "Internal Server Error")
+        }
 
         return sendResponce(res, 202, false, blogs, "blog fetched successfully")
     } catch (error) {
         console.log("===========Internal Server Error==========", error)
         return sendResponce(res, 402, true, null, `Internal server error ${error}`, error)
     }
+})
+
+router.post("/updateBlog:id", (req, res) => {
+
 })
 
 router.get("/fetchAllBlogs", async (req, res) => {
