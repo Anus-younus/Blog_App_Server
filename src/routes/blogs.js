@@ -14,7 +14,7 @@ const blogSchema = Joi.object({
     image: Joi.optional()  // Allow image field
 });
 
-router.post("/addBlog", authenticateUser, upload.single('blog_image'), (req, res) => {
+router.post("/addBlog", authenticateUser, upload.single('blog_image'), async (req, res) => {
     try {
 
         const { title, description, tag } = req.body
@@ -25,11 +25,13 @@ router.post("/addBlog", authenticateUser, upload.single('blog_image'), (req, res
             image: req.image
         })
 
-        const newBlog = new Blog({
+        let newBlog = new Blog({
             title,
             description,
             tag,
         })
+
+        newBlog = await newBlog.save()
 
         return sendResponce(res, 202, false, {}, "blog created successfully")
     } catch (error) {
@@ -57,7 +59,6 @@ router.post("/fetchBlogs", authenticateUser, async (req, res) => {
             return sendResponce(res, 404, error, null, "Internal Server Error")
         }
 
-        return sendResponce(res, 202, false, blogs, "blog fetched successfully")
     } catch (error) {
         console.log("===========Internal Server Error==========", error)
         return sendResponce(res, 402, true, null, `Internal server error ${error}`, error)

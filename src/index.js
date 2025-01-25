@@ -12,6 +12,10 @@ app.use(cors("*"))
 app.use(express.json())
 app.use("/auth", authRoutes)
 app.use("/blog", blogsRoutes)
+
+app.get("/", (req, res) => {
+    res.json({message:"Hello world"})
+})
 connectDb()
 
 
